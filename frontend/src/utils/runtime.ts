@@ -6,7 +6,7 @@ import type { RuntimeConfig } from '../types/runtime';
 export const getRuntimeConfig = (): RuntimeConfig => {
   return (
     window.__MCPHUB_CONFIG__ || {
-      basePath: '',
+      basePath: import.meta.env.VITE_BASE_PATH || '',
       version: 'dev',
       name: 'mcphub',
     }
@@ -20,10 +20,6 @@ export const getBasePath = (): string => {
   const config = getRuntimeConfig();
   const basePath = config.basePath || '';
 
-  // Ensure the path starts with / if it's not empty and doesn't already start with /
-  if (basePath && !basePath.startsWith('/')) {
-    return '/' + basePath;
-  }
   return basePath;
 };
 
@@ -53,16 +49,9 @@ export const loadRuntimeConfig = async (): Promise<RuntimeConfig> => {
   try {
     // For initial config load, we need to determine the correct path
     // Try different possible paths based on current location
-    const currentPath = window.location.pathname;
+    const basePath = import.meta.env.VITE_BASE_PATH || '';
     const possibleConfigPaths = [
-      // If we're already on a subpath, try to use it
-      currentPath.replace(/\/[^/]*$/, '') + '/config',
-      // Try root config
-      '/config',
-      // Try with potential base paths
-      ...(currentPath.includes('/')
-        ? [currentPath.split('/')[1] ? `/${currentPath.split('/')[1]}/config` : '/config']
-        : ['/config']),
+      basePath + '/config',
     ];
 
     for (const configPath of possibleConfigPaths) {
@@ -90,14 +79,14 @@ export const loadRuntimeConfig = async (): Promise<RuntimeConfig> => {
     // Fallback to default config
     console.warn('Could not load runtime config from server, using defaults');
     return {
-      basePath: '',
+      basePath: import.meta.env.VITE_BASE_PATH || '',
       version: 'dev',
       name: 'mcphub',
     };
   } catch (error) {
     console.error('Error loading runtime config:', error);
     return {
-      basePath: '',
+      basePath: import.meta.env.VITE_BASE_PATH || '',
       version: 'dev',
       name: 'mcphub',
     };

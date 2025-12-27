@@ -30,7 +30,7 @@ async function initializeApp() {
     // Fallback: start app with default config
     console.log('Starting app with default configuration...');
     window.__MCPHUB_CONFIG__ = {
-      basePath: '',
+      basePath: import.meta.env.VITE_BASE_PATH || '',
       version: 'dev',
       name: 'mcphub',
     };
